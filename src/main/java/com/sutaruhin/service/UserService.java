@@ -1,6 +1,7 @@
 package com.sutaruhin.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,12 @@ public class UserService {
     @Transactional
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUser(Set<Integer> idck) {
+    	for(Integer id: idck) {
+    		userRepository.deleteById(id);
+    	}
     }
 }
