@@ -56,24 +56,47 @@ public class UserController {
 
 
     @GetMapping("/update/{id}/")
-    public String getUser(@PathVariable("id") Integer id, Model model) {
+    public String getUser(@PathVariable("id") Integer id, Model model ,User user) {
 
-        model.addAttribute("user", service.getUser(id));
+    	//idがnullで無い場合の処理。一覧画面からの遷移なのでモデルにはサービスから取得したユーザーをセットする
+    	if ( id != null ) {
+    		model.addAttribute("user", service.getUser(id));
+    	} else {
+    	//idがnullの場合はpostUser()メソッドからの遷移なので、モデルにはpostUser()から渡された引数のuserをセットする
+    		model.addAttribute("user", user);
+    	}
+
+
+
+
 
         return "user/update";
     }
 
 
     @PostMapping("/update/{id}/")
-    public String postUser(User user) {
+    public String postUser(@Validated User user, BindingResult res,Model model) {
+        if(res.hasErrors()) {
 
+            // バリデーションエラーがある場合
+            // エラーメッセージを設定
+//            model.addAttribute("validationError", true);
+
+            // ユーザーデータを再度モデルにセット
+            model.addAttribute("user", user);
+
+            // 更新画面にリダイレクト
+            return "user/update";
+        }
+
+        // バリデーションエラーがない場合、ユーザー情報を保存
         service.saveUser(user);
 
         return "redirect:/user/list";
     }
 
 
-    @PostMapping(path="list", params="deleteRun")
+	@PostMapping(path="list", params="deleteRun")
     public String deleteRun(@RequestParam(name="idck") Set<Integer> idck, Model model) {
 
         service.deleteUser(idck);
